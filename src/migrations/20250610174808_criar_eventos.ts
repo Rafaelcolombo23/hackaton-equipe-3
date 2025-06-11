@@ -5,8 +5,9 @@ export async function up(knex: Knex): Promise<void> {
         table.increments("id").primary();
         table.string("nome").notNullable();
         table.text("descricao").notNullable();
-        table.dateTime("data_inicio").notNullable();
-        table.dateTime("data_fim").notNullable();
+        table.date("data").notNullable();
+        table.time("horario_inicio").notNullable();
+        table.time("horario_fim").notNullable();
         table
         .integer("coordenador_id")
         .unsigned()
