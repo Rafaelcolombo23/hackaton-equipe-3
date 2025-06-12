@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import knex from "../database/conexao";
 import { z } from "zod";
+import PDFDocument from "pdfkit";
+import path from "path";
+import fs from "fs";
 
 export async function criarInscricao(req: Request, res: Response) {
   const aluno_id = req.user?.id;
@@ -142,3 +145,62 @@ export async function removerInscricao(req: Request, res: Response) {
     return;
   }
 }
+
+export async function gerarCertificado(req: Request, res: Response){
+  const alunoId = req.user?.id;
+  const { eventoId } = req.params;
+
+  try {
+    // Busca a inscrição
+    const inscricao = await knex("inscricoes")
+      .where({ aluno_id: alunoId, evento_id: eventoId })
+      .first();
+
+    if (!inscricao || !inscricao.concluido) {
+      res
+        .status(400)
+        .json({ error: "Inscrição não encontrada ou não concluída." });
+      return;
+    }
+
+    // Busca dados do aluno e evento
+    const aluno = await knex("alunos").where({ id: alunoId }).first();
+    const evento = await knex("eventos").where({ id: eventoId }).first();
+
+    if (!aluno || !evento) {
+      res.status(404).json({ error: "Aluno ou evento não encontrado." });
+      return;
+    }
+
+    const certPath = path.resolve(
+      __dirname,
+      `../../certificados-${aluno.id}-${evento.id}.pdf`
+    );
+
+    fs.mkdirSync(path.dirname(certPath), { recursive: true });
+
+    const doc = new PDFDocument();
+    doc.pipe(fs.createWriteStream(certPath));
+
+    doc.fontSize(20).text("Certificado de Participação", { align: "center" });
+    doc.moveDown();
+    doc
+      .fontSize(14)
+      .text(
+        `Certificamos que ${aluno.nome} participou do evento "${evento.titulo}" realizado em ${evento.data}.`,
+        {
+          align: "center",
+        }
+      );
+
+    doc.end();
+    res
+      .status(200)
+      .json({ message: "Certificado gerado com sucesso!", path: certPath });
+    return;
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao gerar certificado." });
+    return;
+  }
+};

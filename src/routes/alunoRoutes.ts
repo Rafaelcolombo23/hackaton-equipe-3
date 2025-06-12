@@ -6,8 +6,8 @@ import { listarAlunosId } from '../controllers/alunoController';
 
 const router = express.Router();
 
-router.post('/alunos', criarAluno);
-router.get('/alunos', listarAlunos);
-router.get('/alunos', listarAlunosId);
+router.post('/', criarAluno);
+router.get('/', listarAlunos);
+router.get('/:id', listarAlunosId);
 
 export default router;

@@ -3,7 +3,7 @@ import { Router } from "express";
 
 const router = Router()
 
-router.get("/palestrantes", listarPalestrantes)
-router.get("/palestrantes", listarPalestrantePorId)
+router.get("/", listarPalestrantes)
+router.get("/:id", listarPalestrantePorId)
 
 export default router

@@ -3,7 +3,7 @@ import { Router } from "express";
 
 const router = Router();
 
-router.get("/coordenadores", listarCoordenadorPorId)
-router.get("/coordenadores", listarCoordenadores)
+router.get("/:id", listarCoordenadorPorId)
+router.get("/", listarCoordenadores)
 
 export default router
