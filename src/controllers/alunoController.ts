@@ -18,7 +18,7 @@ export async function criarAluno(req: Request, res: Response) {
     let raGerado: number;
     let alunoExistente;
 
-    const emailExistente = await knex("aluno").where({ email }).first();
+    const emailExistente = await knex("alunos").where({ email }).first();
 
     if (emailExistente) {
       res.status(400).json({ error: "Este email ja esta cadastrado" });
