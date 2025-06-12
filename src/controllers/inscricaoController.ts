@@ -33,6 +33,7 @@ export async function criarInscricao(req: Request, res: Response) {
       aluno_id,
       evento_id,
       data_inscricao: knex.fn.now(),
+      concluido: true,
     });
 
     const inscricaoCriada = await knex("inscricoes").where("id", id).first();

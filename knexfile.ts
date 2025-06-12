@@ -1,0 +1,21 @@
+import type { Knex } from "knex";
+import path from "path";
+
+const config: { [key: string]: Knex.Config } = {
+  development: {
+    client: "mysql2",
+    connection: {
+      host: "localhost",
+      port: 8889,
+      user: "root",
+      password: "root",
+      database: "hackaton",
+    },
+    migrations: {
+     directory: "./src/migrations", 
+      extension: "ts",
+    },
+  },
+};
+
+export default config;
