@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const eventoController_1 = require("../controllers/eventoController");
+const autenticarAluno_1 = require("../middlewares/autenticarAluno");
+const router = (0, express_1.Router)();
+router.get("/eventos", eventoController_1.listarEventos);
+router.get("/eventos/:id", eventoController_1.listarEventoPorId);
+router.get("/eventos-inscritos", autenticarAluno_1.autenticarAluno, eventoController_1.listarEventosInscritos);
+exports.default = router;

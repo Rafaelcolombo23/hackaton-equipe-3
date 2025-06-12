@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const alunoRoutes_1 = __importDefault(require("./alunoRoutes"));
+const eventoRoutes_1 = __importDefault(require("./eventoRoutes"));
+const inscricaoRoutes_1 = __importDefault(require("./inscricaoRoutes"));
+const palestrantesRoutes_1 = __importDefault(require("./palestrantesRoutes"));
+const coordenadorRoutes_1 = __importDefault(require("./coordenadorRoutes"));
+const loginController_1 = require("../controllers/loginController");
+const routes = (0, express_1.Router)();
+routes.post("/login", loginController_1.login);
+routes.use("/alunos", alunoRoutes_1.default);
+routes.use("/eventos", eventoRoutes_1.default);
+routes.use("/inscricoes", inscricaoRoutes_1.default);
+routes.use("/palestrantes", palestrantesRoutes_1.default);
+routes.use("/coordenadores", coordenadorRoutes_1.default);
+exports.default = routes;
