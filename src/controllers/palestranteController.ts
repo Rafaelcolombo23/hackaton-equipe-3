@@ -5,24 +5,54 @@ const baseUrl = process.env.PALESTRANTE_IMG_URL || "";
 
 export async function listarPalestrantes(req: Request, res: Response) {
   try {
-    const palestrantes = await knex("palestrantes").select(
-      "id",
-      "nome",
-      "minicurriculo",
-      "tema",
-      "foto_url"
-    );
+    const dados = await knex("palestrantes")
+      .leftJoin("eventos", "palestrantes.id", "=", "eventos.palestrante_id")
+      .select(
+        "palestrantes.id as palestrante_id",
+        "palestrantes.nome",
+        "palestrantes.minicurriculo",
+        "palestrantes.tema",
+        "palestrantes.foto_url",
+        "eventos.id as evento_id",
+        "eventos.nome",
+        "eventos.descricao",
+        "eventos.data",
+        "eventos.horario_inicio",
+        "eventos.horario_fim"
+      );
 
-    if (!palestrantes || palestrantes.length === 0) {
+    if (!dados.length) {
       res.status(404).json({ mensagem: "Nenhum palestrante encontrado." });
       return;
     }
 
-    const resultado = palestrantes.map((p) => ({
-      ...p,
-      foto_url: `${baseUrl}${p.foto_url}`,
-    }));
-    
+    // Agrupar os eventos por palestrante
+    const agrupado: any = {};
+    for (const item of dados) {
+      if (!agrupado[item.palestrante_id]) {
+        agrupado[item.palestrante_id] = {
+          id: item.palestrante_id,
+          nome: item.nome,
+          minicurriculo: item.minicurriculo,
+          tema: item.tema,
+          foto_url: `${baseUrl}${item.foto_url}`,
+          eventos: [],
+        };
+      }
+
+      if (item.evento_id) {
+        agrupado[item.palestrante_id].eventos.push({
+          id: item.evento_id,
+          nome: item.nome,
+          descricao: item.descricao,
+          data: item.data,
+          horario_inicio: item.horario_inicio,
+          horario_fim: item.horario_fim,
+        });
+      }
+    }
+
+    const resultado = Object.values(agrupado);
     res.status(200).json(resultado);
     return;
   } catch (error) {
@@ -31,14 +61,12 @@ export async function listarPalestrantes(req: Request, res: Response) {
     return;
   }
 }
-
 export async function listarPalestrantePorId(req: Request, res: Response) {
   const { id } = req.params;
 
   try {
     const palestrante = await knex("palestrantes")
-      .where("id", id)
-      .select("id", "nome", "minicurriculo", "tema", "foto_url")
+      .where("palestrantes.id", id)
       .first();
 
     if (!palestrante) {
@@ -46,9 +74,22 @@ export async function listarPalestrantePorId(req: Request, res: Response) {
       return;
     }
 
-    palestrante.foto_url = `${baseUrl}${palestrante.foto_url}`;
+    const eventos = await knex("eventos")
+      .where("eventos.palestrante_id", id)
+      .select(
+        "eventos.id",
+        "eventos.nome",
+        "eventos.descricao",
+        "eventos.data",
+        "eventos.horario_inicio",
+        "eventos.horario_fim"
+      );
 
-    res.status(200).json(palestrante);
+    res.status(200).json({
+      ...palestrante,
+      foto_url: `${baseUrl}${palestrante.foto_url}`,
+      eventos,
+    });
     return;
   } catch (error) {
     console.error(error);
