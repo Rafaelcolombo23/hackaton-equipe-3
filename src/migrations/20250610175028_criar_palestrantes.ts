@@ -8,14 +8,6 @@ export async function up(knex: Knex): Promise<void> {
     table.string("foto_url").nullable();
     table.string("tema").nullable();
 
-    table
-      .integer("evento_id")
-      .unsigned()
-      .notNullable()
-      .references("id")
-      .inTable("eventos")
-      .onDelete("CASCADE");
-
     table.timestamps(true, true);
   });
 }
