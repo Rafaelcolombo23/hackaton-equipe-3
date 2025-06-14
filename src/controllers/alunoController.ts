@@ -97,9 +97,9 @@ export async function listarAlunosId(req: Request, res: Response) {
 
 export async function editarAluno(req: Request, res: Response) {
   const alunoId = req.user?.id;
-  const { nome, curso, senha } = req.body;
+  const { nome, curso, senha, email } = req.body;
 
-  if (!nome && !curso && !senha) {
+  if (!nome && !curso && !senha && !email) {
     res
       .status(400)
       .json({ error: "Informe pelo menos um campo para atualizar." });
@@ -111,6 +111,21 @@ export async function editarAluno(req: Request, res: Response) {
     if (nome) dadosAtualizar.nome = nome;
     if (curso) dadosAtualizar.curso = curso;
     if (senha) dadosAtualizar.senha = await bcrypt.hash(senha, 10);
+    if (email) {
+      const emailExistente = await knex("alunos")
+        .where({ email })
+        .andWhereNot({ id: alunoId })
+        .first();
+
+      if (emailExistente) {
+        res
+          .status(400)
+          .json({ error: "Este e-mail já está em uso por outro aluno." });
+        return;
+      }
+
+      dadosAtualizar.email = email;
+    }
 
     const linhasAfetadas = await knex("alunos")
       .where({ id: alunoId })
