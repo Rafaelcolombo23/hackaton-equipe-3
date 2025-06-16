@@ -69,6 +69,7 @@ export async function listarInscricoes(req: Request, res: Response) {
       .join("eventos", "inscricoes.evento_id", "eventos.id")
       .select(
         "inscricoes.id",
+        "eventos.id as evento_id",
         "inscricoes.data_inscricao",
         "eventos.nome as evento",
         "eventos.data"
@@ -146,12 +147,19 @@ export async function removerInscricao(req: Request, res: Response) {
   }
 }
 
-export async function gerarCertificado(req: Request, res: Response){
+export async function gerarCertificado(req: Request, res: Response) {
   const alunoId = req.user?.id;
   const { eventoId } = req.params;
 
   try {
-    // Busca a inscrição
+    // Verifica se o evento existe
+    const evento = await knex("eventos").where({ id: eventoId }).first();
+    if (!evento) {
+      res.status(404).json({ error: "Evento não encontrado." });
+      return;
+    }
+
+    // Verifica se a inscrição existe e se está concluída
     const inscricao = await knex("inscricoes")
       .where({ aluno_id: alunoId, evento_id: eventoId })
       .first();
@@ -163,21 +171,20 @@ export async function gerarCertificado(req: Request, res: Response){
       return;
     }
 
-    // Busca dados do aluno e evento
+    // Busca dados do aluno
     const aluno = await knex("alunos").where({ id: alunoId }).first();
-    const evento = await knex("eventos").where({ id: eventoId }).first();
-
-    if (!aluno || !evento) {
-      res.status(404).json({ error: "Aluno ou evento não encontrado." });
+    if (!aluno) {
+      res.status(404).json({ error: "Aluno não encontrado." });
       return;
     }
 
-    const certPath = path.resolve(
-      __dirname,
-      `../../certificados-${aluno.id}-${evento.id}.pdf`
+    const certDir = path.resolve(__dirname, "../../certificados");
+    const certPath = path.join(
+      certDir,
+      `certificado-${aluno.id}-${evento.id}.pdf`
     );
 
-    fs.mkdirSync(path.dirname(certPath), { recursive: true });
+    fs.mkdirSync(certDir, { recursive: true });
 
     const doc = new PDFDocument();
     doc.pipe(fs.createWriteStream(certPath));
@@ -187,20 +194,19 @@ export async function gerarCertificado(req: Request, res: Response){
     doc
       .fontSize(14)
       .text(
-        `Certificamos que ${aluno.nome} participou do evento "${evento.titulo}" realizado em ${evento.data}.`,
+        `Certificamos que ${aluno.nome} participou do evento "${evento.nome}" realizado em ${evento.data}.`,
         {
           align: "center",
         }
       );
 
     doc.end();
+
     res
       .status(200)
       .json({ message: "Certificado gerado com sucesso!", path: certPath });
-    return;
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Erro ao gerar certificado." });
-    return;
   }
-};
+}
