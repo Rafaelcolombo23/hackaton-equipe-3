@@ -80,20 +80,34 @@ npm install
 3.	Configure o arquivo knexfile.ts:
 
 const config: { [key: string]: Knex.Config } = {
+
   development: {
+
     client: "mysql2",
+
     connection: {
+
       host: "localhost",
+
       port: 8889,
+
       user: "root",
+
       password: "root",
+
       database: "hackaton",
+
     },
+
     migrations: {
+
      directory: "./src/migrations", 
       extension: "ts",
+
     },
+
   },
+  
 };
 
 4.	Rode as migrations:
