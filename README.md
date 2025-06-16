@@ -160,6 +160,7 @@ Ao gerar o certificado, ele será salvo na pasta /certificados e disponibilizado
 As imagens dos palestrantes são armazenadas na pasta /uploads e acessíveis pela URL:
 
 🧠 Observações
+
 	•	Backoffice dos cadastros de palestrantes e coordenadores é feito via sistema externo (Java).
-	
+
 	•	Esta API serve para consumo do frontend em PHP.
