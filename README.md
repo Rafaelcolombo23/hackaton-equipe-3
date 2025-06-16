@@ -5,37 +5,65 @@
 API desenvolvida para gerenciamento de alunos, eventos, inscrições, palestrantes, coordenadores e geração de certificados em PDF.
 
 🚀 Tecnologias Utilizadas
+
 	•	Node.js
+
 	•	Express
+
 	•	TypeScript
+
 	•	MySQL
+
 	•	Knex.js
+
 	•	JWT (Autenticação)
+
 	•	PDFKit (Geração de certificados)
+
 	•	Multer (Upload de imagens)
+
 	•	dotenv (Variáveis de ambiente)
 
 📂 Estrutura de Pastas
 
 certificados/
+
 dist/
+
 node_modules/
+
 src/
+
 ├── controllers/
+
 ├── middlewares/
+
 ├── migrations/
+
 ├── routes/
+
 ├── certificados/ (certificados PDF)
+
 ├── database/
+
 ├── utils/
+
 ├── server.ts
+
 uploads/
+
 ├── palestrantes/
+
 .env
+
 knexfile.ts
+
 package-lock.json
+
 package.json
+
 README.md
+
 tsconfig.json
 
 🔧 Instalação
@@ -85,28 +113,42 @@ Authorization: Bearer SEU_TOKEN
 🛠️ Endpoints Principais
 
 🧑 Alunos
+
 	•	POST /alunos - Cadastrar aluno
+
 	•	POST /login - Login
+
 	•	PUT /alunos - Editar dados do aluno (autenticado)
 
 🎫 Inscrições
 	•	POST /inscricoes - Fazer inscrição
+
 	•	GET /inscricoes - Listar minhas inscrições
+
 	•	GET /inscricoes/:id - Buscar inscrição específica
+
 	•	DELETE /inscricoes/:id - Remover inscrição
+
 	•	GET /inscricoes/:eventoId/certificado - Gerar certificado PDF
 
 📅 Eventos
+
 	•	GET /eventos - Listar eventos
+
 	•	GET /eventos/:id - Detalhar evento
 
 🎙️ Palestrantes
+
 	•	GET /palestrantes - Listar palestrantes e seus eventos
+
 	•	GET /palestrantes/:id - Detalhar palestrante
+
 	•	Upload de foto acessível em /uploads/nome-da-imagem.jpg
 
 🧑‍💼 Coordenadores
+
 	•	GET /coordenadores - Listar coordenadores e eventos
+
 	•	GET /coordenadores/:id - Detalhar coordenador
 
 📄 Geração de Certificado
@@ -119,4 +161,5 @@ As imagens dos palestrantes são armazenadas na pasta /uploads e acessíveis pel
 
 🧠 Observações
 	•	Backoffice dos cadastros de palestrantes e coordenadores é feito via sistema externo (Java).
+	
 	•	Esta API serve para consumo do frontend em PHP.
